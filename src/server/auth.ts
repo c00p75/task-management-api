@@ -4,10 +4,10 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-
 import { env } from "~/env";
 import { db } from "~/server/db";
+import CredentialsProvider from "next-auth/providers/credentials"
+
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -47,10 +47,31 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(db),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    CredentialsProvider({
+      name: 'email',
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "elon@example.com" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        // const res = await fetch("/your/endpoint", {
+        //   method: 'POST',
+        //   body: JSON.stringify(credentials),
+        //   headers: { "Content-Type": "application/json" }
+        // })
+        // const user = await res.json()
+  
+        // // If no error and we have user data, return it
+        // if (res.ok && user) {
+        //   return user
+        // }
+        // // Return null if user data could not be retrieved
+        // return null
+        console.log(credentials);
+        const user = { id: '1', name: 'George', email: 'test@test.com'}
+        return user
+      }
+    })
     /**
      * ...add more providers here.
      *
